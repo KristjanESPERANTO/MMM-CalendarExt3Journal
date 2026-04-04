@@ -18,81 +18,84 @@ Magic mirror module for presenting events as daily/weekly journal style.
 
 
 ## Install OR Update
+
 ### Install
+
 ```sh
 cd ~/MagicMirror/modules
 git clone https://github.com/MMRIZE/MMM-CalendarExt3Journal
 cd MMM-CalendarExt3Journal
-npm install
-git submodule update --init --recursive
-
+npm install --omit=dev
 ```
 
-> Usually, the last line is needless because it would be executed automatically in `npm install` , but many people forgot to execute `npm install`, so I'm exaggarating.
+**Note:** `npm install` is necessary to install the submodule.
 
 ### Update
+
 ```sh
 cd ~/MagicMirror/modules/MMM-CalendarExt3Journal
 git pull
-npm update
+npm install --omit=dev
 ```
 
-
 ### Not working?
+
 When some `submodule` seems not installed and updated properly, try this.
 ```sh
 cd ~/MagicMirror/modules/MMM-CalendarExt3Journal
 git submodule update --init --recursive
 ```
 
-
 ## Config
+
 Anyway, even this simplest will work.
 ```js
-{
-  module: "MMM-CalendarExt3Journal",
-  position: "bottom_bar",
-},
-
+    {
+      module: "MMM-CalendarExt3Journal",
+      position: "bottom_bar",
+    },
 ```
 
 More conventional;
 ```js
-{
-  module: "MMM-CalendarExt3Journal",
-  position: "bottom_bar",
-  config: {
-    height: '50vh',
-    width: '100%',
-    locale: 'en-GB',
-    staticWeek: true,
-    staticTime: true,
-    hourLength: 9,
-    beginHour:  8,
-    calendarSet: ['us_holiday', 'EPL'],
-  }
-},
+    {
+      module: "MMM-CalendarExt3Journal",
+      position: "bottom_bar",
+      config: {
+        height: '50vh',
+        width: '100%',
+        locale: 'en-GB',
+        staticWeek: true,
+        staticTime: true,
+        hourLength: 9,
+        beginHour:  8,
+        calendarSet: ['us_holiday', 'EPL'],
+      }
+    },
 ```
 
 You need to setup the default `calendar` configuration also.
 ```js
 /* default/calendar module configuration */
-{
-  module: "calendar",
-  position: "top_left",
-  config: {
-    broadcastPastEvents: true, // <= IMPORTANT to see past events
-    calendars: [
-      {
-        url: "webcal://www.calendarlabs.com/ical-calendar/ics/76/US_Holidays.ics",
-        name: "us_holiday", // <= RECOMMENDED to assign name
-        color: "red" // <= RECOMMENDED to assign color
-      },
-      ...
-
+    {
+      module: "calendar",
+      position: "top_left",
+      config: {
+        broadcastPastEvents: true, // <= IMPORTANT to see past events
+        calendars: [
+          {
+            url: "webcal://www.calendarlabs.com/ical-calendar/ics/76/US_Holidays.ics",
+            name: "us_holiday", // <= RECOMMENDED to assign name
+            color: "red" // <= RECOMMENDED to assign color
+          },
+          ...
+        ]
+      }
+    },
 ```
 
 ### Config details
+
 All the properties are omittable, and if omitted, a default value will be applied.
 
 |**property**|**default**|**description**|
@@ -124,10 +127,12 @@ All the properties are omittable, and if omitted, a default value will be applie
 |`firstDayOfWeek`| (auto-filled by locale) | Monday is the first day of the week according to the international standard ISO 8601, but in the US, Canada, Japan and some cultures, it's counted as the second day of the week. If you want to start the week from Monday, set this property to `1`. If you want Sunday, set `0`. <br> Sunday:0, Monday:1, Tuesday:2, ..., Saturday:6 <br> **Auto-filled by locale unless you set manually.** |
 |`minimalDaysOfNewYear` | (auto-filled by locale) | ISO 8601 also says **each week's year is the Gregorian year in which the Thursday falls**. The first week of the year, hence, always contains 4 January. However, the US (Yes, it is.) system differs from standards. In the US, **containing 1 January** defines the first week. In that case, set this value to `1`. And under some other culture, you might need to modify this. <br> **Auto-filled by locale unless you set manually.** |
 
-
 ## Notification
+
 ### Incoming Notifications
+
 #### `CX3J_CONFIG`, payload: {config}
+
 - The current configuration value would be overridden by the receiving payload.
 - For example; the current config might be;
 ```js
@@ -152,9 +157,11 @@ Return to the original config value .
 > I think these 2 notifications would be enough to control the module's view. This approach is a new way for my all CX3* modules. I'll change other CX3* modules in this way later.
 
 ### Outgoing Notification
+
 Nothing yet.  (Does it need?)
 
 ## Styling with CSS
+
 You can handle almost all of the visual things with CSS. See the `MMM-CalendarExt3Journal.css` and override your needs into your `custom.css`.
 - `CX3J`, `CX3J_{instanceId}`, `.bodice` : The root selector. Each instance of this module will have `CX3J_{instanceId}` as another root selector. With this CSS selector, you can assign individual looks to each instance.
 
@@ -174,6 +181,7 @@ The most commonly used values would be defined in `.CX3J` selector as variables.
 
 
 ## Handling Events
+
 Each event object has this structure.
 ```json
 {
@@ -201,6 +209,7 @@ Each event object has this structure.
 You can use these values to handle events.
 
 ### Filtering
+
 You can filter each event by its condition.
 ```js
 eventFilter: (ev) => {
