@@ -4,6 +4,7 @@
   "description": "Magic mirror module for presenting events as daily/weekly journal style.",
   "main": "MMM-CalendarExt3Journal.js",
   "scripts": {
+    "demo": "cd ../../ && MM_CONFIG_FILE=modules/MMM-CalendarExt3Journal/demo.config.js node --run start:wayland:dev",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "git submodule update --init --recursive",
     "postupdate": "git submodule update --init --recursive"
