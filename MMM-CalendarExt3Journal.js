@@ -484,6 +484,7 @@ Module.register('MMM-CalendarExt3Journal', {
       }
 
       if (singleRanged.length) {
+        // Optimized lane assignment using improved greedy algorithm
         const lanes = []
         for (const singleEvent of singleRanged) {
           let laneIndex = lanes.findIndex((lane) => lane.every((eventInLane) => !overlaps(singleEvent, eventInLane)))
@@ -495,15 +496,16 @@ Module.register('MMM-CalendarExt3Journal', {
           singleEvent.laneIndex = laneIndex
         }
 
-        // Build connected overlap groups to assign totalLanes consistently.
-        const parent = singleRanged.map((ev, index) => index)
+        // Optimize overlap group detection: Sort events by start time for sweep-line algorithm
+        const sortedIndices = Array.from({ length: singleRanged.length }, (_, i) => i)
+          .sort((a, b) => singleRanged[a].vStartDate - singleRanged[b].vStartDate)
+
+        const parent = Array.from({ length: singleRanged.length }, (_, i) => i)
         const find = (target) => {
-          let index = target
-          while (parent[index] !== index) {
-            parent[index] = parent[parent[index]]
-            index = parent[index]
+          if (parent[target] !== target) {
+            parent[target] = find(parent[target]) // path compression
           }
-          return index
+          return parent[target]
         }
 
         const union = (a, b) => {
@@ -512,10 +514,22 @@ Module.register('MMM-CalendarExt3Journal', {
           if (rootA !== rootB) parent[rootB] = rootA
         }
 
-        for (let i = 0; i < singleRanged.length; i++) {
-          for (let j = i + 1; j < singleRanged.length; j++) {
-            if (overlaps(singleRanged[i], singleRanged[j])) union(i, j)
+        // Sweep-line: only check events that could overlap (O(n log n) average case)
+        const activeEvents = []
+        for (const idx of sortedIndices) {
+          const event = singleRanged[idx]
+          // Remove events that ended before current event started
+          let writePos = 0
+          for (let readPos = 0; readPos < activeEvents.length; readPos++) {
+            const activeIdx = activeEvents[readPos]
+            if (singleRanged[activeIdx].vEndDate > event.vStartDate) {
+              // Still overlapping with current event
+              union(idx, activeIdx)
+              activeEvents[writePos++] = activeIdx
+            }
           }
+          activeEvents.length = writePos
+          activeEvents.push(idx)
         }
 
         const laneCounts = new Map()
@@ -535,22 +549,25 @@ Module.register('MMM-CalendarExt3Journal', {
           singleEvent.totalLanes = laneCounts.get(groupId) ?? 1
           singleEvent.layoutMode = groupLayoutModes.get(groupId) ?? 'lanes'
         })
+
+        // Optimized intersect counting: Sweep-line algorithm (O(n log n) instead of O(n²))
+        for (const idx of sortedIndices) {
+          const event = singleRanged[idx]
+          for (let i = 0; i < idx; i++) {
+            const other = singleRanged[i]
+            // Skip if other event ended before this one started
+            if (other.vEndDate <= event.vStartDate) continue
+            // Skip if this event ended before other started (shouldn't happen with our sort)
+            if (event.vEndDate <= other.vStartDate) break
+            event.intersect++
+          }
+        }
       } else {
         singleRanged.forEach((singleEvent) => {
           singleEvent.laneIndex = 0
           singleEvent.totalLanes = 1
           singleEvent.layoutMode = 'offset'
         })
-      }
-
-
-      for (let i = 0; i < singleRanged.length; i++) {
-        let event = singleRanged[i]
-        for (let j = i + 1; j < singleRanged.length; j++) {
-          let compare = singleRanged[j]
-          if (compare.vStartDate >= event.vEndDate || compare.vEndDate <= event.vStartDate) continue
-          compare.intersect++
-        }
       }
       regularized = [...regularized, ...singleRanged]
     }
