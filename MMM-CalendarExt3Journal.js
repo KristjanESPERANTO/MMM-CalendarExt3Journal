@@ -54,7 +54,7 @@ Module.register('MMM-CalendarExt3Journal', {
 
   start: function () {
     this.nowTimer = null
-    this.config.locale = Intl.getCanonicalLocales(this.config.locale ?? config.language)?.[0] ?? 'en-US'
+    this.config.locale = Intl.getCanonicalLocales(this.config.locale ?? globalThis.config?.language)?.[0] ?? 'en-US'
     this.config.instanceId = this.config?.instanceId ?? this.identifier
     this.config.hourLength = Math.ceil((this.config.hourLength <= 1) ? 6 : this.config.hourLength)
     this.normalizeOverlapConfig(this.config)
@@ -76,7 +76,7 @@ Module.register('MMM-CalendarExt3Journal', {
     let _moduleLoaded = new Promise((resolve, reject) => {
       import('/' + this.file('CX3_Shared/CX3_shared.mjs')).then((m) => {
         this.library = m
-        this.library.initModule(this, config.language)
+        this.library.initModule(this, globalThis.config?.language)
         if (this.config.useIconify) this.library.prepareIconify()
         resolve()
       }).catch((err) => {
@@ -419,7 +419,7 @@ Module.register('MMM-CalendarExt3Journal', {
       range: [startDateWindow.valueOf(), endDateWindow.valueOf()],
     })
 
-    const [fulldayEvents, singleEvents] = prepared.reduce(([fulldayEvents, singleEvents], event) => { // eslint-disable-line no-unused-vars
+    const [fulldayEvents, singleEvents] = prepared.reduce(([fulldayEvents, singleEvents], event) => {
       if (event.isFullday || event.isMultiday) {
         fulldayEvents.push({ ...event })
       } else {
