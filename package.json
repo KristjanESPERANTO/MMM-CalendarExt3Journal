@@ -7,6 +7,7 @@
     "demo": "cd ../../ && MM_CONFIG_FILE=modules/MMM-CalendarExt3Journal/demo.config.js node --run start:wayland:dev",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "release": "commit-and-tag-version --config ./changelog.config.js",
     "test": "node --run lint",
     "postinstall": "git submodule update --init --recursive",
     "postupdate": "git submodule update --init --recursive"
@@ -32,6 +33,7 @@
     "@eslint/css": "^1.1.0",
     "@eslint/js": "^10.0.1",
     "@eslint/markdown": "^8.0.1",
+    "commit-and-tag-version": "^12.7.1",
     "eslint": "^10.2.0",
     "globals": "^17.4.0"
   }
