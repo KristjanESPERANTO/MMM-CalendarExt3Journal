@@ -46,12 +46,12 @@ Module.register('MMM-CalendarExt3Journal', {
 
 
   getStyles: function () {
-    return [ 'MMM-CalendarExt3Journal.css' ]
+    return ['MMM-CalendarExt3Journal.css']
   },
 
   start: function () {
     this.nowTimer = null
-    this.config.locale = Intl.getCanonicalLocales(this.config.locale ?? config.language )?.[0] ?? 'en-US'
+    this.config.locale = Intl.getCanonicalLocales(this.config.locale ?? config.language)?.[0] ?? 'en-US'
     this.config.instanceId = this.config?.instanceId ?? this.identifier
     this.config.hourLength = Math.ceil((this.config.hourLength <= 1) ? 6 : this.config.hourLength)
     this._ready = false
@@ -93,15 +93,15 @@ Module.register('MMM-CalendarExt3Journal', {
       this._domReady = resolve
     })
 
-    Promise.allSettled([ _moduleLoaded, _firstData, _domCreated ]).then((result) => {
+    Promise.allSettled([_moduleLoaded, _firstData, _domCreated]).then((result) => {
       this._ready = true
       this.library.prepareMagic()
-      let { payload, sender } = result[ 1 ].value
+      let { payload, sender } = result[1].value
       this.fetch(payload, sender, this.activeConfig)
       this._firstDataFetched()
     })
 
-    Promise.allSettled([ _firstFetched ]).then(() => {
+    Promise.allSettled([_firstFetched]).then(() => {
       setTimeout(() => {
         this.updateView({ ...this.activeConfig })
       }, this.config.waitFetch)
@@ -109,7 +109,7 @@ Module.register('MMM-CalendarExt3Journal', {
   },
 
 
-  notificationReceived: function(notification, payload, sender) {
+  notificationReceived: function (notification, payload, sender) {
     if (notification === this.config.notification) {
       this.fetch(payload, sender, this.activeConfig)
     }
@@ -146,7 +146,7 @@ Module.register('MMM-CalendarExt3Journal', {
     }
   },
 
-  getDom: function() {
+  getDom: function () {
     let dom = document.createElement('div')
     dom.classList.add('bodice', 'CX3J_' + this.activeConfig.instanceId, 'CX3J')
     dom.style.setProperty('--moduleHeight', this.activeConfig.height)
@@ -164,8 +164,8 @@ Module.register('MMM-CalendarExt3Journal', {
     let today = new Date()
 
     let startDay = (staticWeek)
-    ? getBeginOfWeek(today, options)
-    : new Date(today.getFullYear(), today.getMonth(), today.getDate() + dayIndex)
+      ? getBeginOfWeek(today, options)
+      : new Date(today.getFullYear(), today.getMonth(), today.getDate() + dayIndex)
     let startHour = new Date(
       startDay.getFullYear(),
       startDay.getMonth(),
@@ -230,9 +230,9 @@ Module.register('MMM-CalendarExt3Journal', {
       dayDom = assignDayClass(dayDom, day, options)
       dayDom.innerHTML = new Intl.DateTimeFormat(options.locale, options.dateHeaderOptions).formatToParts(day)
         .reduce((prev, cur, curIndex, arr) => {
-        prev = prev + `<span class="dayTimeParts ${cur.type} seq_${curIndex}">${cur.value}</span>`
-        return prev
-      }, '')
+          prev = prev + `<span class="dayTimeParts ${cur.type} seq_${curIndex}">${cur.value}</span>`
+          return prev
+        }, '')
       header.appendChild(dayDom)
     }
 
@@ -250,19 +250,19 @@ Module.register('MMM-CalendarExt3Journal', {
 
     const halfHour = 30
 
-    const now = [ today.getHours(), (today.getMinutes() < halfHour) ? true : false ]
+    const now = [today.getHours(), (today.getMinutes() < halfHour) ? true : false]
     for (let i = 0; i < (hourLength * 2); i++) {
       let even = (i % 2 === 0)
       let pm = new Date(startHour.getTime())
       pm.setMinutes(startHour.getMinutes() + (i * halfHour))
-      const current = (pm.getHours() === now[ 0 ] && even === now[ 1 ])
+      const current = (pm.getHours() === now[0] && even === now[1])
       const index = document.createElement('div')
       index.classList.add('index', 'gridCell', (even) ? 'even' : 'odd', (current) ? 'now' : 'notnow')
       index.innerHTML = new Intl.DateTimeFormat(options.locale, options.hourIndexOptions).formatToParts(pm)
-      .reduce((prev, cur, curIndex, arr) => {
-        prev = prev + `<span class="indexTimeParts ${cur.type} seq_${curIndex} ${cur.type}">${cur.value}</span>`
-        return prev
-      }, '')
+        .reduce((prev, cur, curIndex, arr) => {
+          prev = prev + `<span class="indexTimeParts ${cur.type} seq_${curIndex} ${cur.type}">${cur.value}</span>`
+          return prev
+        }, '')
       index.dataset.isoString = pm.toISOString()
       index.dataset.hour = pm.getHours()
       index.dataset.minute = pm.getMinutes()
@@ -352,6 +352,12 @@ Module.register('MMM-CalendarExt3Journal', {
       eDom.classList.add('single')
       eDom.style.setProperty('--eventHeight', height)
       eDom.style.setProperty('--eventTop', (((new Date(+event.vStartDate)).getMinutes() % 30) / 30 * 100) + "%")
+
+      var start = event.laneIndex / event.totalLanes * 100 + "%";
+      var end = (1 - (event.laneIndex + 1) / event.totalLanes) * 100 + "%";
+      eDom.style.setProperty('left', start);
+      eDom.style.setProperty('right', end);
+
       eDom.style.setProperty('--intersect', event.intersect)
       if (event?.continueFromPrev) eDom.classList.add('continueFromPrev')
       if (event?.continueToNext) eDom.classList.add('continueToNext')
@@ -394,17 +400,17 @@ Module.register('MMM-CalendarExt3Journal', {
     const prepared = prepareEvents({
       targetEvents: calendarFilter(events, options.calendarSet),
       config: options,
-      range: [ startDateWindow.valueOf(), endDateWindow.valueOf() ],
+      range: [startDateWindow.valueOf(), endDateWindow.valueOf()],
     })
 
-    const [ fulldayEvents, singleEvents ] = prepared.reduce(([ fulldayEvents, singleEvents ], event) => { // eslint-disable-line no-unused-vars
+    const [fulldayEvents, singleEvents] = prepared.reduce(([fulldayEvents, singleEvents], event) => { // eslint-disable-line no-unused-vars
       if (event.isFullday || event.isMultiday) {
         fulldayEvents.push({ ...event })
       } else {
         singleEvents.push({ ...event })
       }
-      return [ fulldayEvents, singleEvents ]
-    }, [ [], [] ])
+      return [fulldayEvents, singleEvents]
+    }, [[], []])
 
     const result = eventsByDate({
       targetEvents: singleEvents,
@@ -421,9 +427,11 @@ Module.register('MMM-CalendarExt3Journal', {
       let rangeEnd = new Date(day.getFullYear(), day.getMonth(), day.getDate(), startHour.getHours() + options.hourLength)
       events.forEach((orev) => {
         const event = { ...orev }
+
         if (event.isFullday) return
         let startDate = new Date(+event.startDate)
         let endDate = new Date(+event.endDate)
+
         if (startDate.valueOf() >= rangeEnd.valueOf() || endDate.valueOf() <= rangeStart.valueOf()) return
 
         if (startDate.valueOf() < rangeStart.valueOf()) {
@@ -450,15 +458,79 @@ Module.register('MMM-CalendarExt3Journal', {
         if (a.vEndDate < b.vEndDate) return -1
         return 0
       })
+
+      function overlaps(ev1, ev2) {
+        return ev1.vEndDate > ev2.vStartDate && ev1.vStartDate < ev2.vEndDate;
+      }
+
+      // Goal:
+      // Each event will have a lane number and a number of total lanes at its location (e.g. 2 of 3 would be the middle third).
+      // 
+      // Approach:
+      // 0. Assume events are sorted by start date.
+      // 1. For each event, put it in the first available lane where it wouldn't overlap. If it doesn't exist, make it. Use this to set each event's `laneIndex`.
+      // 2. Group events that overlap and set the `totalLanes` of each event in a group the number of lanes in that group
+
+
+      const lanes = [];
+
+      singleRanged.forEach(singleEvent => {
+        var laneFound = false;
+        for (var i = 0; i < lanes.length; i++) {
+          var lane = lanes[i];
+          var hasSpace = lane.every(eventInLane => { return !overlaps(singleEvent, eventInLane) });
+          if (hasSpace) {
+            lane.push(singleEvent);
+            laneFound = true;
+            break;
+          }
+        }
+
+        if (!laneFound) {
+          lanes.push([singleEvent]);
+        }
+      });
+
+      lanes.forEach((lane, laneIndex) => {
+        lane.forEach((singleEvent) => {
+          singleEvent.laneIndex = laneIndex;
+        })
+      });
+
+      // Group things!
+      var groups = [];
+      singleRanged.forEach(singleEvent => {
+        var groupFound = false;
+        for (var groupIndex = 0; groupIndex < groups.length; groupIndex++) {
+          var group = groups[groupIndex];
+          var hasOverlap = group.some(groupEvent => overlaps(singleEvent, groupEvent));
+          if (hasOverlap) {
+            group.push(singleEvent);
+            groupFound = true;
+            return;
+          }
+        }
+
+        if (!groupFound) {
+          groups.push([singleEvent]);
+        }
+      });
+
+      groups.forEach(group => {
+        var lanesInGroup = Math.max(...group.map(singleEvent => singleEvent.laneIndex)) + 1;
+        group.forEach(singleEvent => singleEvent.totalLanes = lanesInGroup);
+      });
+
+
       for (let i = 0; i < singleRanged.length; i++) {
-        let event = singleRanged[ i ]
+        let event = singleRanged[i]
         for (let j = i + 1; j < singleRanged.length; j++) {
-          let compare = singleRanged[ j ]
+          let compare = singleRanged[j]
           if (compare.vStartDate >= event.vEndDate || compare.vEndDate <= event.vStartDate) continue
           compare.intersect++
         }
       }
-      regularized = [ ...regularized, ...singleRanged ]
+      regularized = [...regularized, ...singleRanged]
     }
 
     return {
