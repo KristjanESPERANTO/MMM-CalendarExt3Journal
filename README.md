@@ -1,25 +1,21 @@
 # MMM-CalendarExt3Journal
 
-[MagicMirror²](https://github.com/MagicMirrorOrg/MagicMirror) module for presenting events as daily/weekly journal style.
+[MagicMirror²](https://github.com/MagicMirrorOrg/MagicMirror) module for presenting events as a daily/weekly journal with time ranges.
 
 ## Screenshot
 
- ![screenshot1](screenshot.png)
+![screenshot1](screenshot.png)
 
- ![screenshot2](screenshot2.png)
+![screenshot2](screenshot2.png)
 
 ## Features
 
-### Main Features
+- Detailed event view by day/week with specific time ranges
+- Locale-aware calendar (date formats, first day of week, weekends)
+- Customizable events: filtering, sorting, transforming
+- Multi-instance support — no need to copy/rename the module
 
-- More detailed view of events by day/week with specific time ranges.
-- locale-aware calendar
-- customizing events: filtering, sorting, transforming
-- multi-instance available. You don't need to copy and rename the module. Just add one more configuration in your `config.js`.
-
-## Install OR Update
-
-### Install
+## Install
 
 ```sh
 cd ~/MagicMirror/modules
@@ -28,9 +24,9 @@ cd MMM-CalendarExt3Journal
 npm install --omit=dev
 ```
 
-**Note:** `npm install` is necessary to install the submodule.
+> **Note:** `npm install` is required — it initializes the CX3_Shared submodule.
 
-### Update
+## Update
 
 ```sh
 cd ~/MagicMirror/modules/MMM-CalendarExt3Journal
@@ -38,17 +34,14 @@ git pull
 npm install --omit=dev
 ```
 
-### Not working?
-
-When some `submodule` seems not installed and updated properly, try this.
+If the submodule is not updated properly, run:
 ```sh
-cd ~/MagicMirror/modules/MMM-CalendarExt3Journal
 git submodule update --init --recursive
 ```
 
 ## Config
 
-Anyway, even this simplest will work.
+The simplest configuration:
 ```js
     {
       module: "MMM-CalendarExt3Journal",
@@ -56,7 +49,7 @@ Anyway, even this simplest will work.
     },
 ```
 
-More conventional;
+A more complete example:
 ```js
     {
       module: "MMM-CalendarExt3Journal",
@@ -75,7 +68,7 @@ More conventional;
     },
 ```
 
-You need to setup the default `calendar` configuration also.
+The default `calendar` module must also be configured:
 ```js
 /* default/calendar module configuration */
     {
@@ -114,7 +107,7 @@ All the properties are omittable, and if omitted, a default value will be applie
 |`hourLength` | 4 | How many hours the view has. |
 |`hourIndexOptions` | {hour: 'numeric', minute: '2-digit'} | The format of hour index time. It varies by the `locale` and this option. <br>With `locale:'en-GB'`, isplaying will be `12:00`. <br> See [options](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#parameters) |
 |`dateHeaderOptions` | {day: 'numeric', weekday: 'short'} | The format of each day header. It varies by the `locale` and this option. <br>With `locale:'en-GB'`, displaying will be `SUN 25`. <br> See [options](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#parameters) |
-|`eventTimeOptions` | {timeStyle 'short'} | The format of each event. It varies by the `locale` and this option. <br>With `locale:'en-GB'`, displaying will be `12:34`. <br> See [options](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#parameters) |
+|`eventTimeOptions` | `{timeStyle: 'short'}` | The format of each event. It varies by the `locale` and this option. <br>With `locale:'en-GB'`, displaying will be `12:34`. <br> See [options](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#parameters) |
 |`eventFilter`| callback function | See the `Filtering` part.|
 |`eventSorter`| callback function | See the `Sorting` part.|
 |`eventTransformer`| callback function | See the `Transforming` part.|
@@ -125,7 +118,7 @@ All the properties are omittable, and if omitted, a default value will be applie
 |`useSymbol` | true | Whether to show font-awesome symbold instead of simple dot icon. |
 |`maxLaneThreshold` | 3 | Maximum lane count per connected overlap group before falling back to compact offset rendering. If lane count is greater than this value, that group is shown in offset mode. `0` means always offset, very high values mean almost always lanes. |
 |`useIconify` | false | If set `true`, You can use `iconify-icon` instead of `fontawesome`. |
-|`weekends` | (auto-filled by locale) |(Array of day order). e.g. `weekends: [1, 3]` means Monday and Wedneseday would be regarded as weekends. Usually you don't have to set this value. <br> **Auto-filled by locale unless you set manually.** |
+|`weekends` | (auto-filled by locale) |(Array of day order). e.g. `weekends: [1, 3]` means Monday and Wednesday would be regarded as weekends. Usually you don't have to set this value. <br> **Auto-filled by locale unless you set manually.** |
 |`firstDayOfWeek`| (auto-filled by locale) | Monday is the first day of the week according to the international standard ISO 8601, but in the US, Canada, Japan and some cultures, it's counted as the second day of the week. If you want to start the week from Monday, set this property to `1`. If you want Sunday, set `0`. <br> Sunday:0, Monday:1, Tuesday:2, ..., Saturday:6 <br> **Auto-filled by locale unless you set manually.** |
 |`minimalDaysOfNewYear` | (auto-filled by locale) | ISO 8601 also says **each week's year is the Gregorian year in which the Thursday falls**. The first week of the year, hence, always contains 4 January. However, the US (Yes, it is.) system differs from standards. In the US, **containing 1 January** defines the first week. In that case, set this value to `1`. And under some other culture, you might need to modify this. <br> **Auto-filled by locale unless you set manually.** |
 
@@ -260,12 +253,14 @@ This is the better place to adjust the event itself to make it compatible with t
 
 
 ### skip to draw
-if an `evnet` has `.skip: true` attribute as a property, this event will not be rendered on the screen. However, it will remain in the data, so you can sort, filter or use that event.
+
+If an event has `.skip: true` as a property, it will not be rendered. However, it remains in the data, so you can still sort, filter, or reference it.
 
 Generally, this attribute will not derived from the original calendar provider(e.g. default calendar module). You may need to assign the value by yourself with event-handling.
 
-### using `iconify`.
-Even though `fontawesome` is the default icon framework of MM, there are many needs of `iconify`. And I prefer it to font-awesome. Now you can use iconify icons by config value `useIconify: true`
+### Using Iconify
+
+You can use [Iconify](https://iconify.design/) icons instead of Font Awesome by setting `useIconify: true`:
 ```js
 // In your calendar module config
 defaultSymbolClassName: '', // <-- Important to identify iconify properly.
@@ -283,21 +278,16 @@ calendars: [
 ],
 ```
 
-**WARNING**
-To use `iconify`, you should set `defaultSymbolClassName: '',` in your default calendar module. Ususally, it is enough when you hide the original default calendar module to use with CX3*. But if you want to use font-awesome icons together, you should add font-awesome class names (e.g `fa`, `fas`, `fa-calendar-check`...) by yourself.
+> **Note:** Set `defaultSymbolClassName: ''` in your calendar module config when using Iconify. If you want to use Font Awesome icons alongside Iconify, add the Font Awesome class names (e.g. `fa`, `fas`, `fa-calendar-check`) manually.
 
 
-## Not the bug, but...
-- The default `calendar` module cannot emit the exact starting time of `multidays-fullday-event which is passing current moment`. Always it starts from today despite of original event starting time. So this module displays these kinds of multidays-fullday-event weirdly.
+## Known Limitations
 
+- The default `calendar` module does not emit the exact start time of multi-day full-day events that span the current moment — they always appear to start today. This module inherits that behavior.
 
-## Latest Updates
-### 1.0.1 (2024-04-29)
-- **FIXED** : MM's repeated singleday timezone issue
-- **ADDED** : CSS selector for day cells. (e.g. `.today`, ...)
-- **UPDATED** : more stable CX3_Shared structure
+## Changelog
 
-### 1.0.0 (2023-11-27)
+See [CHANGELOG.md](CHANGELOG.md).
 - Released.
 
 
