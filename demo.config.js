@@ -43,6 +43,7 @@ let config = {
       header: "Journal View",
       config: {
         locale: "de-DE",
+        maxLaneThreshold: 3,
         days: 5,
         beginHour: 7,
         hourLength: 12,

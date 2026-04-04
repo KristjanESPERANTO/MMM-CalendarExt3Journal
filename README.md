@@ -65,6 +65,7 @@ More conventional;
         height: '50vh',
         width: '100%',
         locale: 'en-GB',
+        maxLaneThreshold: 3,
         staticWeek: true,
         staticTime: true,
         hourLength: 9,
@@ -122,6 +123,7 @@ All the properties are omittable, and if omitted, a default value will be applie
 |`refreshInterval`| 600000 | (ms) refresh view by force if you need it. |
 |`animationSpeed` | 1000 | (ms) Refreshing the view smoothly. |
 |`useSymbol` | true | Whether to show font-awesome symbold instead of simple dot icon. |
+|`maxLaneThreshold` | 3 | Maximum lane count per connected overlap group before falling back to compact offset rendering. If lane count is greater than this value, that group is shown in offset mode. `0` means always offset, very high values mean almost always lanes. |
 |`useIconify` | false | If set `true`, You can use `iconify-icon` instead of `fontawesome`. |
 |`weekends` | (auto-filled by locale) |(Array of day order). e.g. `weekends: [1, 3]` means Monday and Wedneseday would be regarded as weekends. Usually you don't have to set this value. <br> **Auto-filled by locale unless you set manually.** |
 |`firstDayOfWeek`| (auto-filled by locale) | Monday is the first day of the week according to the international standard ISO 8601, but in the US, Canada, Japan and some cultures, it's counted as the second day of the week. If you want to start the week from Monday, set this property to `1`. If you want Sunday, set `0`. <br> Sunday:0, Monday:1, Tuesday:2, ..., Saturday:6 <br> **Auto-filled by locale unless you set manually.** |

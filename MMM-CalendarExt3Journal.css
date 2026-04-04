@@ -167,8 +167,8 @@
 .CX3J .event.single {
   position: absolute;
   top: var(--eventTop);
-  left: calc(var(--intersect) * 10px);
-  right: 5px;
+  left: var(--eventLeft, calc(var(--intersect) * 10px));
+  right: var(--eventRight, 5px);
   border-radius: 5px;
   height: max(calc((100% + var(--borderSize)) * var(--eventHeight)), 20%);
   z-index: 2;

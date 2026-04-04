@@ -35,6 +35,9 @@ Module.register('MMM-CalendarExt3Journal', {
     eventTransformer: null,
     preProcessor: null,
     useSymbol: true,
+    // If overlapping lanes in a connected group exceed this value,
+    // fallback to compact offset rendering for that group.
+    maxLaneThreshold: 3,
     notification: 'CALENDAR_EVENTS',
     //maxIntersect: 3, // max number of events to show in a column
     //displayLegend: false,
@@ -54,6 +57,7 @@ Module.register('MMM-CalendarExt3Journal', {
     this.config.locale = Intl.getCanonicalLocales(this.config.locale ?? config.language)?.[0] ?? 'en-US'
     this.config.instanceId = this.config?.instanceId ?? this.identifier
     this.config.hourLength = Math.ceil((this.config.hourLength <= 1) ? 6 : this.config.hourLength)
+    this.normalizeOverlapConfig(this.config)
     this._ready = false
     if (this.config.staticWeek) {
       this.config.days = 7
@@ -120,6 +124,7 @@ Module.register('MMM-CalendarExt3Journal', {
 
     if (notification === 'CX3J_CONFIG') {
       this.activeConfig = { ...this.activeConfig, ...payload }
+      this.normalizeOverlapConfig(this.activeConfig)
       this.updateView({ ...this.activeConfig })
     }
 
@@ -132,6 +137,11 @@ Module.register('MMM-CalendarExt3Journal', {
   fetch: function (payload, sender, options) {
     this.eventPool.set(sender.identifier, JSON.parse(JSON.stringify(payload)))
     this.updateView(options)
+  },
+
+  normalizeOverlapConfig: function (targetConfig) {
+    const maxLaneThreshold = Number.parseInt(targetConfig.maxLaneThreshold, 10)
+    targetConfig.maxLaneThreshold = Number.isFinite(maxLaneThreshold) && maxLaneThreshold >= 0 ? maxLaneThreshold : 3
   },
 
   updateView: function (options) {
@@ -353,10 +363,16 @@ Module.register('MMM-CalendarExt3Journal', {
       eDom.style.setProperty('--eventHeight', height)
       eDom.style.setProperty('--eventTop', (((new Date(+event.vStartDate)).getMinutes() % 30) / 30 * 100) + "%")
 
-      var start = event.laneIndex / event.totalLanes * 100 + "%";
-      var end = (1 - (event.laneIndex + 1) / event.totalLanes) * 100 + "%";
-      eDom.style.setProperty('left', start);
-      eDom.style.setProperty('right', end);
+      if (event.layoutMode === 'lanes' && event.totalLanes > 1) {
+        const laneWidth = 100 / event.totalLanes
+        const start = laneWidth * event.laneIndex
+        const end = 100 - laneWidth * (event.laneIndex + 1)
+        eDom.style.setProperty('--eventLeft', `${start}%`)
+        eDom.style.setProperty('--eventRight', `${end}%`)
+      } else {
+        eDom.style.removeProperty('--eventLeft')
+        eDom.style.removeProperty('--eventRight')
+      }
 
       eDom.style.setProperty('--intersect', event.intersect)
       if (event?.continueFromPrev) eDom.classList.add('continueFromPrev')
@@ -460,66 +476,68 @@ Module.register('MMM-CalendarExt3Journal', {
       })
 
       function overlaps(ev1, ev2) {
-        return ev1.vEndDate > ev2.vStartDate && ev1.vStartDate < ev2.vEndDate;
+        return ev1.vEndDate > ev2.vStartDate && ev1.vStartDate < ev2.vEndDate
       }
 
-      // Goal:
-      // Each event will have a lane number and a number of total lanes at its location (e.g. 2 of 3 would be the middle third).
-      // 
-      // Approach:
-      // 0. Assume events are sorted by start date.
-      // 1. For each event, put it in the first available lane where it wouldn't overlap. If it doesn't exist, make it. Use this to set each event's `laneIndex`.
-      // 2. Group events that overlap and set the `totalLanes` of each event in a group the number of lanes in that group
+      if (singleRanged.length) {
+        const lanes = []
+        for (const singleEvent of singleRanged) {
+          let laneIndex = lanes.findIndex((lane) => lane.every((eventInLane) => !overlaps(singleEvent, eventInLane)))
+          if (laneIndex === -1) {
+            laneIndex = lanes.length
+            lanes.push([])
+          }
+          lanes[laneIndex].push(singleEvent)
+          singleEvent.laneIndex = laneIndex
+        }
 
+        // Build connected overlap groups to assign totalLanes consistently.
+        const parent = singleRanged.map((ev, index) => index)
+        const find = (target) => {
+          let index = target
+          while (parent[index] !== index) {
+            parent[index] = parent[parent[index]]
+            index = parent[index]
+          }
+          return index
+        }
 
-      const lanes = [];
+        const union = (a, b) => {
+          const rootA = find(a)
+          const rootB = find(b)
+          if (rootA !== rootB) parent[rootB] = rootA
+        }
 
-      singleRanged.forEach(singleEvent => {
-        var laneFound = false;
-        for (var i = 0; i < lanes.length; i++) {
-          var lane = lanes[i];
-          var hasSpace = lane.every(eventInLane => { return !overlaps(singleEvent, eventInLane) });
-          if (hasSpace) {
-            lane.push(singleEvent);
-            laneFound = true;
-            break;
+        for (let i = 0; i < singleRanged.length; i++) {
+          for (let j = i + 1; j < singleRanged.length; j++) {
+            if (overlaps(singleRanged[i], singleRanged[j])) union(i, j)
           }
         }
 
-        if (!laneFound) {
-          lanes.push([singleEvent]);
-        }
-      });
-
-      lanes.forEach((lane, laneIndex) => {
-        lane.forEach((singleEvent) => {
-          singleEvent.laneIndex = laneIndex;
+        const laneCounts = new Map()
+        singleRanged.forEach((singleEvent, index) => {
+          const groupId = find(index)
+          const lanesInGroup = laneCounts.get(groupId) ?? 0
+          laneCounts.set(groupId, Math.max(lanesInGroup, singleEvent.laneIndex + 1))
         })
-      });
 
-      // Group things!
-      var groups = [];
-      singleRanged.forEach(singleEvent => {
-        var groupFound = false;
-        for (var groupIndex = 0; groupIndex < groups.length; groupIndex++) {
-          var group = groups[groupIndex];
-          var hasOverlap = group.some(groupEvent => overlaps(singleEvent, groupEvent));
-          if (hasOverlap) {
-            group.push(singleEvent);
-            groupFound = true;
-            return;
-          }
-        }
+        const groupLayoutModes = new Map()
+        laneCounts.forEach((lanesInGroup, groupId) => {
+          groupLayoutModes.set(groupId, (lanesInGroup > options.maxLaneThreshold) ? 'offset' : 'lanes')
+        })
 
-        if (!groupFound) {
-          groups.push([singleEvent]);
-        }
-      });
-
-      groups.forEach(group => {
-        var lanesInGroup = Math.max(...group.map(singleEvent => singleEvent.laneIndex)) + 1;
-        group.forEach(singleEvent => singleEvent.totalLanes = lanesInGroup);
-      });
+        singleRanged.forEach((singleEvent, index) => {
+          const groupId = find(index)
+          singleEvent.totalLanes = laneCounts.get(groupId) ?? 1
+          singleEvent.layoutMode = groupLayoutModes.get(groupId) ?? 'lanes'
+        })
+      } else {
+        singleRanged.forEach((singleEvent) => {
+          singleEvent.laneIndex = 0
+          singleEvent.totalLanes = 1
+          singleEvent.layoutMode = 'offset'
+        })
+      }
 
 
       for (let i = 0; i < singleRanged.length; i++) {
