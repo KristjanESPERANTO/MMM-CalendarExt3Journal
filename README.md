@@ -1,21 +1,21 @@
 # MMM-CalendarExt3Journal
-Magic mirror module for presenting events as daily/weekly journal style.
+
+[MagicMirror²](https://github.com/MagicMirrorOrg/MagicMirror) module for presenting events as daily/weekly journal style.
 
 ## Screenshot
-![screenshot1](https://raw.githubusercontent.com/MMRIZE/public_ext_storage/main/MMM-CalendarExt3Journal/screenshot.png)
 
-![screenshot2](https://raw.githubusercontent.com/MMRIZE/public_ext_storage/main/MMM-CalendarExt3Journal/screenshot2.png)
+ ![screenshot1](screenshot.png)
 
-
-
+ ![screenshot2](screenshot2.png)
 
 ## Features
+
 ### Main Features
+
 - More detailed view of events by day/week with specific time ranges.
 - locale-aware calendar
 - customizing events: filtering, sorting, transforming
 - multi-instance available. You don't need to copy and rename the module. Just add one more configuration in your `config.js`.
-
 
 ## Install OR Update
 
