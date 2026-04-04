@@ -73,10 +73,14 @@ Module.register('MMM-CalendarExt3Journal', {
 
     this.activeConfig = { ...this.config }
     this.originalConfig = { ...this.activeConfig }
+
+    // Initialize eventPool
+    this.eventPool = new Map()
+    this.refreshTimer = null
+
     let _moduleLoaded = new Promise((resolve, reject) => {
       import('/' + this.file('CX3_Shared/CX3_shared.mjs')).then((m) => {
         this.library = m
-        this.library.initModule(this, globalThis.config?.language)
         if (this.config.useIconify) this.library.prepareIconify()
         resolve()
       }).catch((err) => {
