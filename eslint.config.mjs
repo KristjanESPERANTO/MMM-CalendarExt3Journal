@@ -16,6 +16,7 @@ export default defineConfig([
     extends: ['css/recommended'],
     rules: {
       'css/no-invalid-properties': 'off',
+      'css/use-baseline': 'off',
     },
   },
   {
