@@ -303,6 +303,16 @@ See [CHANGELOG.md](CHANGELOG.md).
 - [MMM-CalendarExt3Timeline](https://github.com/MMRIZE/MMM-CalendarExt3Timeline)
 - [MMM-CalendarExt3Journal](https://github.com/MMRIZE/MMM-CalendarExt3Journal)
 
+## Developer Commands
+
+- `node --run demo` - Start MagicMirror with demo config.
+- `node --run lint` - Run linting checks.
+- `node --run lint:fix` - Auto-fix linting issues.
+- `node --run test` - Run full suite (lint + unit + shared integration).
+- `node --run test:unit` - Run module unit tests only.
+- `node --run test:integration-shared` - Run shared sanity tests only.
+- `node --run test:watch` - Watch mode for module unit tests.
+- `node --run release` - Create a new release.
 
 ## Author
 - Seongnoh Yi (eouia0819@gmail.com)

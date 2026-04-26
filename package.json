@@ -9,7 +9,10 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "release": "commit-and-tag-version --config ./changelog.config.js",
-    "test": "node --run lint",
+    "test": "node --run lint && node --run test:unit && node --run test:integration-shared",
+    "test:unit": "node --test tests/unit/*.test.mjs",
+    "test:watch": "node --test --watch tests/unit/*.test.mjs",
+    "test:integration-shared": "node --test CX3_Shared/CX3_shared.test.mjs",
     "postinstall": "git submodule update --init --recursive",
     "postupdate": "git submodule update --init --recursive"
   },
