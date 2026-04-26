@@ -291,7 +291,7 @@ See [CHANGELOG.md](CHANGELOG.md).
 - Released.
 
 
-## More Info.
+## More Info
 - Discussion board: https://github.com/MMRIZE/MMM-CalendarExt3Journal/discussions
 - Bug Report: https://github.com/MMRIZE/MMM-CalendarExt3Journal/issues
 - Examples, Tips, and other info WIKI: https://github.com/MMRIZE/MMM-CalendarExt3Journal/wiki
@@ -308,3 +308,7 @@ See [CHANGELOG.md](CHANGELOG.md).
 - Seongnoh Yi (eouia0819@gmail.com)
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Y8Y56IFLK)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
