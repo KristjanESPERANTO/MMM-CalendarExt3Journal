@@ -443,13 +443,13 @@ Module.register('MMM-CalendarExt3Journal', {
   },
 
   regularize: function (events, options, { startDay, startHour }) {
-    const { eventsByDate, prepareEvents, calendarFilter } = this.library
+    const { eventsByDate, prepareEvents } = this.library
 
     const startDateWindow = new Date(startDay.getFullYear(), startDay.getMonth(), startDay.getDate())
     const endDateWindow = new Date(startDay.getFullYear(), startDay.getMonth(), startDay.getDate() + parseInt(options.days))
 
     const prepared = prepareEvents({
-      targetEvents: calendarFilter(events, options.calendarSet),
+      targetEvents: events,
       config: options,
       range: [startDateWindow.valueOf(), endDateWindow.valueOf()],
     })
