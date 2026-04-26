@@ -54,6 +54,9 @@ Module.register('MMM-CalendarExt3Journal', {
 
   start: function () {
     this.nowTimer = null
+    this.timer = null
+    this._suspended = false
+    this._stopped = false
     this.config.locale = Intl.getCanonicalLocales(this.config.locale ?? globalThis.config?.language)?.[0] ?? 'en-US'
     this.config.instanceId = this.config?.instanceId ?? this.identifier
     this.config.hourLength = Math.ceil((this.config.hourLength <= 1) ? 6 : this.config.hourLength)
@@ -179,9 +182,36 @@ Module.register('MMM-CalendarExt3Journal', {
     targetConfig.maxLaneThreshold = Number.isFinite(maxLaneThreshold) && maxLaneThreshold >= 0 ? maxLaneThreshold : 3
   },
 
+  clearModuleTimers: function () {
+    if (this.timer) {
+      clearTimeout(this.timer)
+      this.timer = null
+    }
+    if (this.nowTimer) {
+      clearTimeout(this.nowTimer)
+      this.nowTimer = null
+    }
+  },
+
+  suspend: function () {
+    this._suspended = true
+    this.clearModuleTimers()
+  },
+
+  resume: function () {
+    this._suspended = false
+    if (this._ready) this.updateView({ ...this.activeConfig })
+  },
+
+  stop: function () {
+    this._stopped = true
+    this._suspended = true
+    this.clearModuleTimers()
+  },
+
   updateView: function (options) {
-    clearTimeout(this.timer)
-    this.timer = null
+    if (this._suspended || this._stopped) return
+    this.clearModuleTimers()
     this.updateDom(this.config.animationSpeed)
 
     if (options?.refreshInterval) {
@@ -326,6 +356,7 @@ Module.register('MMM-CalendarExt3Journal', {
     }
 
     const drawNowIndicator = (main, options) => {
+      if (this._suspended || this._stopped) return
       clearTimeout(this.nowTimer)
       this.nowTimer = null
       let nowHeight
@@ -354,6 +385,7 @@ Module.register('MMM-CalendarExt3Journal', {
       nowIndicator.dataset.time = new Intl.DateTimeFormat(options.locale, options.eventTimeOptions).format(now)
 
       this.nowTimer = setTimeout(() => {
+        if (this._suspended || this._stopped) return
         drawNowIndicator(main, options)
       }, 1000 * 10)
     }
