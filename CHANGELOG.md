@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.1.1](https://github.com/MMRIZE/MMM-CalendarExt3Journal/compare/v1.1.0...v1.1.1) (2026-04-26)
+
+
+### Fixed
+
+* **cx3j:** restore callbacks for MM 2.35.0 ([cc7b9e2](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/cc7b9e2de42006bc29f08ad3b5cda9da5e4eb8be)), closes [#16](https://github.com/MMRIZE/MMM-CalendarExt3Journal/issues/16)
+* harden timer lifecycle for suspend/resume ([4089d83](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/4089d83cd661987d7ffb0ef123ca5db5219a1c3f))
+
+
+### Performance Improvements
+
+* remove redundant calendar filtering ([b00f6f7](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/b00f6f71e68ac35bf8a53476412296d25e6f2831))
+* speed up event cell lookup in render path ([0747e51](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/0747e513ba2b0df5dbb4a1a5d07d6d6669e7f91e))
+* use structuredClone for event payloads ([d921815](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/d921815ce69cae93d9c306cc99f304667dcb79a4))
+
+
+### Chores
+
+* add "type" field to package.json ([89170b6](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/89170b67d51e98501a416e54af448d9e134e9903))
+* change license file format to markdown and link in readme to it ([af15dc8](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/af15dc89292b6574992ca48d51ba62785c6ad785))
+* simplify eslint commands ([67fd34d](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/67fd34de673b1ce2b859bf666fce92347934a485))
+* simplify promise creation and clean up eslint rules ([1762ba6](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/1762ba60efe37c8cae6c43b60fef5e25592206dc))
+* update devDependencies ([74ecfb1](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/74ecfb1caea2352318ad5e4e32d99bdc78d48e42))
+* update subproject commit reference in CX3_Shared ([b311c32](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/b311c3223377bdb1e3394cbbb64f631e92dbaa39))
+
+
+### Tests
+
+* add module and shared tests ([4c3e8be](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/4c3e8be229b3cf2023a2cdfd43d2a3a771708638))
+
 ## [1.1.0](https://github.com/MMRIZE/MMM-CalendarExt3Journal/compare/v1.0.1...v1.1.0) (2026-04-04)
 
 
