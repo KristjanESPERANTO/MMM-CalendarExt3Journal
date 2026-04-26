@@ -89,15 +89,15 @@ Module.register('MMM-CalendarExt3Journal', {
       })
     })
 
-    let _firstData = new Promise((resolve, reject) => {
+    let _firstData = new Promise((resolve) => {
       this._receiveFirstData = resolve
     })
 
-    let _firstFetched = new Promise((resolve, reject) => {
+    let _firstFetched = new Promise((resolve) => {
       this._firstDataFetched = resolve
     })
 
-    let _domCreated = new Promise((resolve, reject) => {
+    let _domCreated = new Promise((resolve) => {
       this._domReady = resolve
     })
 
@@ -243,7 +243,7 @@ Module.register('MMM-CalendarExt3Journal', {
       dayDom.classList.add('daycell')
       dayDom = assignDayClass(dayDom, day, options)
       dayDom.innerHTML = new Intl.DateTimeFormat(options.locale, options.dateHeaderOptions).formatToParts(day)
-        .reduce((prev, cur, curIndex, arr) => {
+        .reduce((prev, cur, curIndex) => {
           prev = prev + `<span class="dayTimeParts ${cur.type} seq_${curIndex}">${cur.value}</span>`
           return prev
         }, '')
@@ -273,7 +273,7 @@ Module.register('MMM-CalendarExt3Journal', {
       const index = document.createElement('div')
       index.classList.add('index', 'gridCell', (even) ? 'even' : 'odd', (current) ? 'now' : 'notnow')
       index.innerHTML = new Intl.DateTimeFormat(options.locale, options.hourIndexOptions).formatToParts(pm)
-        .reduce((prev, cur, curIndex, arr) => {
+        .reduce((prev, cur, curIndex) => {
           prev = prev + `<span class="indexTimeParts ${cur.type} seq_${curIndex} ${cur.type}">${cur.value}</span>`
           return prev
         }, '')
@@ -297,7 +297,7 @@ Module.register('MMM-CalendarExt3Journal', {
     const drawNowIndicator = (main, options) => {
       clearTimeout(this.nowTimer)
       this.nowTimer = null
-      let nowHeight = 0;
+      let nowHeight
       let nowIndicator = main.querySelector('.nowIndicator')
       if (!nowIndicator) {
         nowIndicator = document.createElement('div')

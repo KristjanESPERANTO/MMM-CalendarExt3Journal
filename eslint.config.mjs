@@ -32,10 +32,6 @@ export default defineConfig([
       },
     },
     extends: [js.configs.recommended],
-    rules: {
-      'no-unused-vars': 'off',
-      'no-useless-assignment': 'off',
-    },
   },
   {
     files: ['**/*.mjs'],
@@ -50,12 +46,6 @@ export default defineConfig([
     extends: [js.configs.recommended],
     rules: {
       'no-unused-vars': 'off',
-    },
-  },
-  {
-    files: ['demo.config.js'],
-    rules: {
-
     },
   },
   {
