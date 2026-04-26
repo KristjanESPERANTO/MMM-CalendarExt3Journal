@@ -379,16 +379,17 @@ Module.register('MMM-CalendarExt3Journal', {
 
     const { fullday, single } = this.regularize(targetEvents, options, startObj)
 
-    const periods = Array.from(dom.querySelectorAll('.cell')).map(cell => cell.dataset.isoString)
+    const cellsByIso = new Map(
+      Array.from(dom.querySelectorAll('.cell')).map((cell) => [cell.dataset.isoString, cell]),
+    )
     for (let event of single) {
       if (event?.skip) continue
       let startPoint = new Date(+event.vStartDate)
       startPoint.setMinutes((startPoint.getMinutes() < 30) ? 0 : 30)
       startPoint.setSeconds(0)
       startPoint.setMilliseconds(0)
-      let matchedPeriod = periods.find(period => period === startPoint.toISOString())
-      if (!matchedPeriod) continue
-      let cell = dom.querySelector(`.cell[data-iso-string="${matchedPeriod}"]`)
+      const matchedPeriod = startPoint.toISOString()
+      let cell = cellsByIso.get(matchedPeriod)
       if (!cell) continue
 
       let cellDate = new Date(matchedPeriod)
