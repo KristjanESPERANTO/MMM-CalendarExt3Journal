@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.1.2](https://github.com/MMRIZE/MMM-CalendarExt3Journal/compare/v1.1.1...v1.1.2) (2026-04-26)
+
+
+### Fixed
+
+* **closure:** restore closure context in config callbacks ([d72ab5d](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/d72ab5d567c0afdc6fdf30792f9c6da2e61c1d24))
+
 ## [1.1.1](https://github.com/MMRIZE/MMM-CalendarExt3Journal/compare/v1.1.0...v1.1.1) (2026-04-26)
 
 
