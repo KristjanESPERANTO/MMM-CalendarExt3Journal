@@ -5,8 +5,8 @@
   "main": "MMM-CalendarExt3Journal.js",
   "scripts": {
     "demo": "cd ../../ && MM_CONFIG_FILE=modules/MMM-CalendarExt3Journal/demo.config.js node --run start:wayland:dev",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
     "release": "commit-and-tag-version --config ./changelog.config.js",
     "test": "node --run lint",
     "postinstall": "git submodule update --init --recursive",
