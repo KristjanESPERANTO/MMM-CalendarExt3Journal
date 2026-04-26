@@ -156,11 +156,17 @@ Module.register('MMM-CalendarExt3Journal', {
     if (payload.identifier !== this.identifier) return
 
     const functionKeys = ['preProcessor', 'eventFilter', 'eventTransformer', 'eventSorter']
+    const preamble = payload.variablePreamble || ''
 
     for (const key of functionKeys) {
       if (!payload.functions?.[key]) continue
       try {
-        const fn = new Function('return ' + payload.functions[key])()
+        // Create a function factory that first evaluates the variable preamble
+        // (declaring all variables in its scope), then returns the callback function.
+        // The callback function now has access to those variables through closure.
+        const fnFactory = new Function(preamble + '\nreturn ' + payload.functions[key])
+        const fn = fnFactory()
+
         if (typeof fn !== 'function') continue
         this.activeConfig[key] = fn
         this.originalConfig[key] = fn
