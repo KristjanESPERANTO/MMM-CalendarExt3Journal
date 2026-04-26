@@ -170,7 +170,7 @@ Module.register('MMM-CalendarExt3Journal', {
   },
 
   fetch: function (payload, sender, options) {
-    this.eventPool.set(sender.identifier, JSON.parse(JSON.stringify(payload)))
+    this.eventPool.set(sender.identifier, structuredClone(payload))
     this.updateView(options)
   },
 
