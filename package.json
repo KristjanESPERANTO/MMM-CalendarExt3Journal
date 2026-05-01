@@ -1,6 +1,6 @@
 {
   "name": "mmm-calendarext3journal",
-  "version": "1.1.2",
+  "version": "2.0.0",
   "type": "commonjs",
   "description": "Magic mirror module for presenting events as daily/weekly journal style.",
   "main": "MMM-CalendarExt3Journal.js",
