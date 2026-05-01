@@ -53,6 +53,33 @@ Module.register('MMM-CalendarExt3Journal', {
     return ['MMM-CalendarExt3Journal.css']
   },
 
+  socketNotificationReceived: function (notification, payload) {
+    if (notification !== 'CX3J_FUNCTIONS_RESTORED') return
+    if (payload.identifier !== this.identifier) return
+
+    const functionKeys = ['preProcessor', 'eventFilter', 'eventTransformer', 'eventSorter']
+    const preamble = payload.variablePreamble || ''
+
+    for (const key of functionKeys) {
+      if (!payload.functions?.[key]) continue
+      try {
+        // Create a function factory that first evaluates the variable preamble
+        // (declaring all variables in its scope), then returns the callback function.
+        // The callback function now has access to those variables through closure.
+        const fnFactory = new Function(preamble + '\nreturn ' + payload.functions[key])
+        const fn = fnFactory()
+
+        if (typeof fn !== 'function') continue
+        this.activeConfig[key] = fn
+        this.originalConfig[key] = fn
+      } catch (error) {
+        Log.warn(`[CX3J] Could not restore config function "${key}":`, error.message)
+      }
+    }
+
+    this._functionsReady()
+  },
+
   start: function () {
     this.nowTimer = null
     this.timer = null
@@ -81,6 +108,7 @@ Module.register('MMM-CalendarExt3Journal', {
     // Initialize eventPool
     this.eventPool = new Map()
     this.refreshTimer = null
+    this.sendSocketNotification("CX3J_REGISTER", { config: this.config, identifier: this.identifier })
 
     let _moduleLoaded = new Promise((resolve, reject) => {
       import('/' + this.file('CX3_Shared/CX3_shared.mjs')).then((m) => {
