@@ -1,4 +1,5 @@
 Module.register('MMM-CalendarExt3Journal', {
+  requiresVersion: '2.36.0',
   defaults: {
     height: '800px',
     width: '100%',
@@ -77,16 +78,6 @@ Module.register('MMM-CalendarExt3Journal', {
     this.activeConfig = { ...this.config }
     this.originalConfig = { ...this.activeConfig }
 
-    // Since MM v2.35.0, config functions are stripped in browser JSON config.
-    // Restore them via node_helper before first render pipeline runs.
-    // TODO: Re-evaluate with MagicMirror v2.36.0 and remove this workaround
-    // when config callbacks are preserved again in frontend config delivery.
-    const _functionsRestored = new Promise((resolve) => {
-      this._functionsReady = resolve
-      setTimeout(resolve, 5000)
-    })
-    this.sendSocketNotification('CX3J_REGISTER', { identifier: this.identifier })
-
     // Initialize eventPool
     this.eventPool = new Map()
     this.refreshTimer = null
@@ -114,7 +105,7 @@ Module.register('MMM-CalendarExt3Journal', {
       this._domReady = resolve
     })
 
-    Promise.allSettled([_moduleLoaded, _firstData, _domCreated, _functionsRestored]).then((result) => {
+    Promise.allSettled([_moduleLoaded, _firstData, _domCreated]).then((result) => {
       this._ready = true
       this.library.prepareMagic()
       let { payload, sender } = result[1].value
@@ -149,33 +140,6 @@ Module.register('MMM-CalendarExt3Journal', {
       this.activeConfig = { ...this.originalConfig }
       this.updateView({ ...this.activeConfig })
     }
-  },
-
-  socketNotificationReceived: function (notification, payload) {
-    if (notification !== 'CX3J_FUNCTIONS_RESTORED') return
-    if (payload.identifier !== this.identifier) return
-
-    const functionKeys = ['preProcessor', 'eventFilter', 'eventTransformer', 'eventSorter']
-    const preamble = payload.variablePreamble || ''
-
-    for (const key of functionKeys) {
-      if (!payload.functions?.[key]) continue
-      try {
-        // Create a function factory that first evaluates the variable preamble
-        // (declaring all variables in its scope), then returns the callback function.
-        // The callback function now has access to those variables through closure.
-        const fnFactory = new Function(preamble + '\nreturn ' + payload.functions[key])
-        const fn = fnFactory()
-
-        if (typeof fn !== 'function') continue
-        this.activeConfig[key] = fn
-        this.originalConfig[key] = fn
-      } catch (error) {
-        Log.warn(`[CX3J] Could not restore config function "${key}":`, error.message)
-      }
-    }
-
-    this._functionsReady()
   },
 
   fetch: function (payload, sender, options) {
