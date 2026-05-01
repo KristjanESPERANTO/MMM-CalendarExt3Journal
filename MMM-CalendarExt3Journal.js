@@ -235,7 +235,7 @@ Module.register('MMM-CalendarExt3Journal', {
   },
 
   drawBoard: function (dom, options) {
-    if (!this.library?.loaded) return dom
+    if (!this.library?.loaded || !this._ready) return dom
 
     const { getBeginOfWeek, isToday, isThisMonth, isThisYear, isWeekend } = this.library
     const { beginHour, staticWeek, dayIndex, days, staticTime, hourLength } = options
