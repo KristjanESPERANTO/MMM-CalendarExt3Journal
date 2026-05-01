@@ -10,7 +10,7 @@ module.exports = NodeHelper.create({
     // TODO: Remove when upstream MM adds closure variable support to function reviver.
     this.functionConfigs = []
     this.variablePreamble = ''
-    this.registrationCount = 0
+    this.identifierFunctions = new Map()
     this.loadFunctionConfigs()
   },
 
@@ -83,12 +83,15 @@ module.exports = NodeHelper.create({
 
   socketNotificationReceived: function (notification, payload) {
     if (notification === 'CX3J_REGISTER') {
-      // MM initializes modules in config order; map nth registration to nth config entry.
-      const index = this.registrationCount++
+      const { identifier } = payload
+      if (!this.identifierFunctions.has(identifier)) {
+        const index = this.identifierFunctions.size
+        this.identifierFunctions.set(identifier, this.functionConfigs[index] || {})
+      }
       this.sendSocketNotification('CX3J_FUNCTIONS_RESTORED', {
-        identifier: payload.identifier,
+        identifier,
         variablePreamble: this.variablePreamble,
-        functions: this.functionConfigs[index] || {},
+        functions: this.identifierFunctions.get(identifier),
       })
     }
   },

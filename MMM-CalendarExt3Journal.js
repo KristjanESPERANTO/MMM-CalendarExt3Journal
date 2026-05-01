@@ -105,10 +105,15 @@ Module.register('MMM-CalendarExt3Journal', {
     this.activeConfig = { ...this.config }
     this.originalConfig = { ...this.activeConfig }
 
+    const _functionsRestored = new Promise((resolve) => {
+      this._functionsReady = resolve
+      setTimeout(resolve, 5000)
+    })
+
     // Initialize eventPool
     this.eventPool = new Map()
     this.refreshTimer = null
-    this.sendSocketNotification("CX3J_REGISTER", { config: this.config, identifier: this.identifier })
+    this.sendSocketNotification('CX3J_REGISTER', { identifier: this.identifier })
 
     let _moduleLoaded = new Promise((resolve, reject) => {
       import('/' + this.file('CX3_Shared/CX3_shared.mjs')).then((m) => {
@@ -133,7 +138,7 @@ Module.register('MMM-CalendarExt3Journal', {
       this._domReady = resolve
     })
 
-    Promise.allSettled([_moduleLoaded, _firstData, _domCreated]).then((result) => {
+    Promise.allSettled([_moduleLoaded, _firstData, _domCreated, _functionsRestored]).then((result) => {
       this._ready = true
       this.library.prepareMagic()
       let { payload, sender } = result[1].value
