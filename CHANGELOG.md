@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.0.2](https://github.com/MMRIZE/MMM-CalendarExt3Journal/compare/v2.0.1...v2.0.2) (2026-05-01)
+
+
+### Fixed
+
+* **closure:** restore startup gate and reconnect mapping ([34c38f2](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/34c38f221455a3142b17e8b5492604eedf642873))
+
+
+### Chores
+
+* update devDependencies ([f37b882](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/f37b8826e2a3a51dbff65a731b23d9823eba192c))
+
 ## [2.0.1](https://github.com/MMRIZE/MMM-CalendarExt3Journal/compare/v2.0.0...v2.0.1) (2026-05-01)
 
 
