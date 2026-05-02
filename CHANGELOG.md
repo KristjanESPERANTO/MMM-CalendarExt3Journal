@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.0.3](https://github.com/MMRIZE/MMM-CalendarExt3Journal/compare/v2.0.2...v2.0.3) (2026-05-02)
+
+
+### Fixed
+
+* **closure:** guard drawBoard against early render before functions restored ([9955633](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/9955633d587410051306fb1982baad8cf5138326))
+* **startup:** resolve _firstData gate on first calendar notification ([86f1d6f](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/86f1d6fb0a7735af7daed3bd95b8e32c73c9bb8a)), closes [#17](https://github.com/MMRIZE/MMM-CalendarExt3Journal/issues/17)
+
+
+### Tests
+
+* add regression tests for _firstData startup gate ([c014eb0](https://github.com/MMRIZE/MMM-CalendarExt3Journal/commit/c014eb0553cee599ec178d1e905838cd36ab09f8))
+
 ## [2.0.2](https://github.com/MMRIZE/MMM-CalendarExt3Journal/compare/v2.0.1...v2.0.2) (2026-05-01)
 
 
