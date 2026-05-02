@@ -86,6 +86,43 @@ test('socketNotificationReceived restores callback functions', () => {
   assert.equal(readyCalls, 1)
 })
 
+test('notificationReceived resolves _firstData gate on first calendar notification', () => {
+  // Regression: _receiveFirstData was assigned in start() but never called,
+  // causing Promise.allSettled to hang and _ready to never become true.
+  const payload = [{ title: 'Event A' }]
+  const sender = { identifier: 'calendar-a' }
+
+  let receivedValue
+  const ctx = {
+    config: { notification: 'CALENDAR_EVENTS' },
+    eventPool: new Map(),
+    _receiveFirstData: (value) => { receivedValue = value },
+    fetch: () => {},
+    updateView: () => {},
+  }
+
+  moduleDef.notificationReceived.call(ctx, 'CALENDAR_EVENTS', payload, sender)
+
+  assert.deepEqual(receivedValue, { payload, sender })
+  assert.equal(ctx._receiveFirstData, null, '_receiveFirstData must be nulled after first call')
+})
+
+test('notificationReceived only resolves _firstData gate once', () => {
+  let callCount = 0
+  const ctx = {
+    config: { notification: 'CALENDAR_EVENTS' },
+    eventPool: new Map(),
+    _receiveFirstData: () => { callCount++ },
+    fetch: () => {},
+    updateView: () => {},
+  }
+
+  moduleDef.notificationReceived.call(ctx, 'CALENDAR_EVENTS', [], { identifier: 'a' })
+  moduleDef.notificationReceived.call(ctx, 'CALENDAR_EVENTS', [], { identifier: 'b' })
+
+  assert.equal(callCount, 1)
+})
+
 test('socketNotificationReceived ignores payload for other instance', () => {
   let readyCalls = 0
   const ctx = {
