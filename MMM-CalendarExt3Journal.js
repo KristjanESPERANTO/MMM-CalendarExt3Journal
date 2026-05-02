@@ -156,6 +156,10 @@ Module.register('MMM-CalendarExt3Journal', {
 
   notificationReceived: function (notification, payload, sender) {
     if (notification === this.config.notification) {
+      if (this._receiveFirstData) {
+        this._receiveFirstData({ payload, sender })
+        this._receiveFirstData = null
+      }
       this.fetch(payload, sender, this.activeConfig)
     }
 
